@@ -1,154 +1,136 @@
-# Video Swin Transformer
+# vswin: Video Swin Transformer para Colab
 
-[![PWC](https://img.shields.io/endpoint.svg?url=https://paperswithcode.com/badge/video-swin-transformer/action-classification-on-kinetics-400)](https://paperswithcode.com/sota/action-classification-on-kinetics-400?p=video-swin-transformer)
-[![PWC](https://img.shields.io/endpoint.svg?url=https://paperswithcode.com/badge/video-swin-transformer/action-classification-on-kinetics-600)](https://paperswithcode.com/sota/action-classification-on-kinetics-600?p=video-swin-transformer)
-[![PWC](https://img.shields.io/endpoint.svg?url=https://paperswithcode.com/badge/video-swin-transformer/action-recognition-in-videos-on-something)](https://paperswithcode.com/sota/action-recognition-in-videos-on-something?p=video-swin-transformer)
+Este paquete carga los checkpoints oficiales de
+[Video Swin Transformer](https://github.com/SwinTransformer/Video-Swin-Transformer) con PyTorch 2.x,
+sin mmcv ni mmaction, y los afina con los miniclips del paquete de preprocesamiento (`preproc`).
 
-By [Ze Liu](https://github.com/zeliu98/)\*, [Jia Ning](https://github.com/hust-nj)\*, [Yue Cao](http://yue-cao.me),  [Yixuan Wei](https://github.com/weiyx16), [Zheng Zhang](https://stupidzz.github.io/), [Stephen Lin](https://scholar.google.com/citations?user=c3PYmxUAAAAJ&hl=en) and [Han Hu](https://ancientmooner.github.io/).
+El repositorio oficial exige `mmcv` entre 1.3.1 y 1.4.0. Esa versión necesita PyTorch 1.x y no se puede
+instalar en Colab. El modelo en sí solo depende de `torch`, `timm` y `einops`. Por eso
+`vswin/swin3d.py` es una copia del backbone oficial (licencia Apache-2.0, ver `LICENSE_VIDEO_SWIN`)
+sin esas dependencias. Los nombres de los parámetros no cambian, así que los `.pth` oficiales cargan
+directamente.
 
-This repo is the official implementation of ["Video Swin Transformer"](https://arxiv.org/abs/2106.13230). It is based on [mmaction2](https://github.com/open-mmlab/mmaction2).
+## Instalación en Colab
 
-## Updates
+1. Sube esta carpeta a Drive.
+2. Elige **Entorno de ejecución → Cambiar tipo → GPU**.
+3. Ejecuta:
 
-***06/25/2021*** Initial commits
-
-## Introduction
-
-**Video Swin Transformer** is initially described in ["Video Swin Transformer"](https://arxiv.org/abs/2106.13230), which advocates an inductive bias of locality in video Transformers, leading to a better speed-accuracy trade-off compared to previous approaches which compute self-attention globally even with spatial-temporal factorization. The locality of the proposed video architecture is realized by adapting the Swin Transformer designed for the image domain, while continuing to leverage the power of pre-trained image models. Our approach achieves state-of-the-art accuracy on a broad range of video recognition benchmarks, including action recognition (`84.9` top-1 accuracy on Kinetics-400 and `86.1` top-1 accuracy on Kinetics-600 with `~20x` less pre-training data and `~3x` smaller model size) and temporal modeling (`69.6` top-1 accuracy on Something-Something v2).
-
-
-![teaser](figures/teaser.png)
-
-## Results and Models
-
-### Kinetics 400
-
-| Backbone |  Pretrain   | Lr Schd | spatial crop | acc@1 | acc@5 | #params | FLOPs | config | model |
-| :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: |
-|  Swin-T  | ImageNet-1K |  30ep   |     224      |  78.8  |  93.6  |   28M   |  87.9G  |  [config](configs/recognition/swin/swin_tiny_patch244_window877_kinetics400_1k.py)  | [github](https://github.com/SwinTransformer/storage/releases/download/v1.0.4/swin_tiny_patch244_window877_kinetics400_1k.pth)/[baidu](https://pan.baidu.com/s/1mIqRzk8RILeRsP2KB5T6fg) |
-|  Swin-S  | ImageNet-1K |  30ep   |     224      |  80.6  |  94.5  |   50M   |  165.9G  |  [config](configs/recognition/swin/swin_small_patch244_window877_kinetics400_1k.py)   | [github](https://github.com/SwinTransformer/storage/releases/download/v1.0.4/swin_small_patch244_window877_kinetics400_1k.pth)/[baidu](https://pan.baidu.com/s/1imq7LFNtSu3VkcRjd04D4Q) |
-|  Swin-B  | ImageNet-1K |  30ep   |     224      |  80.6  |  94.6  |   88M   |  281.6G  |  [config](configs/recognition/swin/swin_base_patch244_window877_kinetics400_1k.py)   | [github](https://github.com/SwinTransformer/storage/releases/download/v1.0.4/swin_base_patch244_window877_kinetics400_1k.pth)/[baidu](https://pan.baidu.com/s/1bD2lxGxqIV7xECr1n2slng) |
-|  Swin-B  | ImageNet-22K |  30ep   |     224      |  82.7  |  95.5  |   88M   |  281.6G  |  [config](configs/recognition/swin/swin_base_patch244_window877_kinetics400_22k.py)   | [github](https://github.com/SwinTransformer/storage/releases/download/v1.0.4/swin_base_patch244_window877_kinetics400_22k.pth)/[baidu](https://pan.baidu.com/s/1CcCNzJAIud4niNPcREbDbQ) |
-
-### Kinetics 600
-
-| Backbone |  Pretrain   | Lr Schd | spatial crop | acc@1 | acc@5 | #params | FLOPs | config | model |
-| :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: |
-|  Swin-B  | ImageNet-22K |  30ep   |     224      |  84.0  |  96.5  |   88M   |  281.6G  |  [config](configs/recognition/swin/swin_base_patch244_window877_kinetics600_22k.py)   | [github](https://github.com/SwinTransformer/storage/releases/download/v1.0.4/swin_base_patch244_window877_kinetics600_22k.pth)/[baidu](https://pan.baidu.com/s/1ZMeW6ylELTje-o3MiaZ-MQ) |
-
-### Something-Something V2
-
-| Backbone |  Pretrain   | Lr Schd | spatial crop | acc@1 | acc@5 | #params | FLOPs | config | model |
-| :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: |
-|  Swin-B  | Kinetics 400 |  60ep  |     224      |  69.6  |  92.7  |   89M   |  320.6G  |  [config](configs/recognition/swin/swin_base_patch244_window1677_sthv2.py)   | [github](https://github.com/SwinTransformer/storage/releases/download/v1.0.4/swin_base_patch244_window1677_sthv2.pth)/[baidu](https://pan.baidu.com/s/18MOGf6L3LeUjrLoQEeA52Q) |
-
-**Notes**:
-
-- **Pre-trained image models can be downloaded from [Swin Transformer for ImageNet Classification](https://github.com/microsoft/Swin-Transformer)**.
-- The pre-trained model of SSv2 could be downloaded at [github](https://github.com/SwinTransformer/storage/releases/download/v1.0.4/swin_base_patch244_window1677_kinetics400_22k.pth)/[baidu](https://pan.baidu.com/s/1ZnJuX7-x2BflDKHpuvdLUg).
-- Access code for baidu is `swin`.
-
-## Usage
-
-###  Installation
-
-Please refer to [install.md](docs/install.md) for installation.
-
-We also provide docker file [cuda10.1](docker/docker_10.1) ([image url](https://hub.docker.com/layers/ninja0/mmdet/pytorch1.7.1-py37-cuda10.1-openmpi-mmcv1.3.3-apex-timm/images/sha256-06d745934cb255e7fdf4fa55c47b192c81107414dfb3d0bc87481ace50faf90b?context=repo)) and [cuda11.0](docker/docker_11.0) ([image url](https://hub.docker.com/layers/ninja0/mmdet/pytorch1.7.1-py37-cuda11.0-openmpi-mmcv1.3.3-apex-timm/images/sha256-79ec3ec5796ca154a66d85c50af5fa870fcbc48357c35ee8b612519512f92828?context=repo)) for convenient usage.
-
-###  Data Preparation
-
-Please refer to [data_preparation.md](docs/data_preparation.md) for a general knowledge of data preparation.
-The supported datasets are listed in [supported_datasets.md](docs/supported_datasets.md).
-
-We also share our Kinetics-400 annotation file [k400_val](https://github.com/SwinTransformer/storage/releases/download/v1.0.6/k400_val.txt), [k400_train](https://github.com/SwinTransformer/storage/releases/download/v1.0.6/k400_train.txt) for better comparison.
-
-### Inference
-```
-# single-gpu testing
-python tools/test.py <CONFIG_FILE> <CHECKPOINT_FILE> --eval top_k_accuracy
-
-# multi-gpu testing
-bash tools/dist_test.sh <CONFIG_FILE> <CHECKPOINT_FILE> <GPU_NUM> --eval top_k_accuracy
+```python
+from google.colab import drive
+drive.mount('/content/drive')
+!pip install -q /content/drive/MyDrive/Video-Swin-Transformer-Colab
 ```
 
-### Training
+Colab ya trae `torch` y `ffmpeg`. Para el resto de los pasos, abre `colab_quickstart.ipynb`.
 
-To train a video recognition model with pre-trained image models (for Kinetics-400 and Kineticc-600 datasets), run:
-```
-# single-gpu training
-python tools/train.py <CONFIG_FILE> --cfg-options model.backbone.pretrained=<PRETRAIN_MODEL> [model.backbone.use_checkpoint=True] [other optional arguments]
+## Módulos
 
-# multi-gpu training
-bash tools/dist_train.sh <CONFIG_FILE> <GPU_NUM> --cfg-options model.backbone.pretrained=<PRETRAIN_MODEL> [model.backbone.use_checkpoint=True] [other optional arguments]
-```
-For example, to train a `Swin-T` model for Kinetics-400 dataset  with  8 gpus, run:
-```
-bash tools/dist_train.sh configs/recognition/swin/swin_tiny_patch244_window877_kinetics400_1k.py 8 --cfg-options model.backbone.pretrained=<PRETRAIN_MODEL> 
-```
+| Módulo | Contenido |
+|---|---|
+| `variants.py` | Catálogo de checkpoints oficiales (T/S/B, K400, K600, SSv2) con hiperparámetros y URL |
+| `checkpoints.py` | Descarga con caché (`MyDrive/vswin_cache`), lectura de `.pth` y carga con informe de claves |
+| `model.py` | `VideoSwin` = `SwinTransformer3D` + `I3DHead`; `build_model(...)` |
+| `swin3d.py` | Backbone oficial sin mmcv |
+| `swin_input.py` | Formato de entrada: `to_model_input`, `prepare_clips`, `normalize`, `to_cthw`, `check_input` |
+| `miniclip_reading.py` | Lectura de los `.mp4` de `miniclips/<id>/` con ffmpeg a RGB uint8 |
+| `dataset.py` | `index_dataset`, `split_records`, `MiniclipDataset` (modos clip y video), `make_loaders` |
+| `inference.py` | `predict_clips`, `predict_video`, `extract_features` |
+| `fine_tuning.py` | `FineTuneConfig`, `FineTuner` (AMP, acumulación, warmup + coseno, reanudación), `evaluate`, métricas |
+| `feature_cache.py` | Solo cabeza: extrae y guarda los embeddings (original y volteado), `HeadTrainer` y `evaluate_features` |
+| `colab_setup.py` | Montaje de Drive, información de la GPU, tipo de AMP y carpeta de caché |
 
-To train a video recognizer with pre-trained video models (for Something-Something v2 datasets), run:
-```
-# single-gpu training
-python tools/train.py <CONFIG_FILE> --cfg-options load_from=<PRETRAIN_MODEL> [model.backbone.use_checkpoint=True] [other optional arguments]
+## Cargar el modelo
 
-# multi-gpu training
-bash tools/dist_train.sh <CONFIG_FILE> <GPU_NUM> --cfg-options load_from=<PRETRAIN_MODEL> [model.backbone.use_checkpoint=True] [other optional arguments]
-```
-For example, to train a `Swin-B` model for SSv2 dataset with 8 gpus, run:
-```
-bash tools/dist_train.sh configs/recognition/swin/swin_base_patch244_window1677_sthv2.py 8 --cfg-options load_from=<PRETRAIN_MODEL>
-```
+```python
+import vswin
 
-**Note:** `use_checkpoint` is used to save GPU memory. Please refer to [this page](https://pytorch.org/docs/stable/checkpoint.html) for more details.
+# Kinetics-400 completo (400 clases)
+model = vswin.build_model('swin_b_k400_22k', device='cuda')
 
+# Tesis: backbone preentrenado + cabeza nueva de 2 clases
+model = vswin.build_model('swin_b_k400_22k', num_classes=2, use_checkpoint=True, device='cuda')
 
-### Apex (optional):
-We use apex for mixed precision training by default. To install apex, use our provided docker or run:
-```
-git clone https://github.com/NVIDIA/apex
-cd apex
-pip install -v --disable-pip-version-check --no-cache-dir --global-option="--cpp_ext" --global-option="--cuda_ext" ./
-```
-If you would like to disable apex, comment out the following code block in the [configuration files](configs/recognition/swin):
-```
-# do not use mmcv version fp16
-fp16 = None
-optimizer_config = dict(
-    type="DistOptimizerHook",
-    update_interval=1,
-    grad_clip=None,
-    coalesce=True,
-    bucket_size_mb=-1,
-    use_fp16=True,
-)
+# Cabeza binaria: 1 salida + sigmoide (BCEWithLogitsLoss) en lugar de 2 salidas + softmax
+model = vswin.build_model('swin_b_k400_22k', num_classes=2, binary=True, device='cuda')
+
+# Modelo ya afinado (binary debe coincidir con el usado al entrenar)
+model = vswin.build_model('swin_b_k400_22k', num_classes=2, pretrained='.../best.pth', device='cuda')
 ```
 
-## Citation
-If you find our work useful in your research, please cite:
+Con `binary=True`, `FineTuner` usa `BCEWithLogitsLoss` (con `pos_weight` opcional), y
+`logits_to_probs` convierte σ(z) en `[1 − p, p]`. Así las métricas y las predicciones son las mismas que
+con softmax.
 
+`build_model` imprime cuántos tensores cargó, si la cabeza se dejó sin cargar y si el backbone quedó
+completo. Si falta alguna capa del backbone, lanza un error.
+
+## Entrada del modelo
+
+| | Valor |
+|---|---|
+| Forma | `(B, C, T, H, W) = (B, 3, 32, 224, 224)` |
+| Tipo | `float32` (AMP: bf16 en A100/L4, fp16 en T4) |
+| Canales | RGB |
+| Normalización | `(x/255 − (0.485, 0.456, 0.406)) / (0.229, 0.224, 0.225)` |
+| Muestreo en el preentrenamiento | 32 cuadros, 1 de cada 2 (igual que `stride: 2` en `preproc`) |
+
+```python
+clips = vswin.read_miniclips('salida/pornography2k/miniclips/<id>')  # (K, 32, 224, 224, 3) uint8
+x = vswin.prepare_clips(clips, device='cuda')                         # (K, 3, 32, 224, 224) float32
 ```
-@article{liu2021video,
-  title={Video Swin Transformer},
-  author={Liu, Ze and Ning, Jia and Cao, Yue and Wei, Yixuan and Zhang, Zheng and Lin, Stephen and Hu, Han},
-  journal={arXiv preprint arXiv:2106.13230},
-  year={2021}
-}
 
-@article{liu2021Swin,
-  title={Swin Transformer: Hierarchical Vision Transformer using Shifted Windows},
-  author={Liu, Ze and Lin, Yutong and Cao, Yue and Hu, Han and Wei, Yixuan and Zhang, Zheng and Lin, Stephen and Guo, Baining},
-  journal={arXiv preprint arXiv:2103.14030},
-  year={2021}
-}
+Así cambian las dimensiones dentro de Swin-B: (B, 3, 32, 224, 224) → patch 2×4×4 →
+(B, 128, 16, 56, 56) → etapas 1 a 4 (espacio 56→28→14→7) → (B, 1024, 16, 7, 7) →
+promedio → (B, 1024) → lineal → (B, num_classes).
+
+Los Datasets entregan uint8. La conversión a float y la normalización se hacen en la GPU con
+`to_model_input`, porque así se transfieren 4 veces menos bytes.
+
+## Ajuste fino
+
+```python
+records = vswin.index_dataset('/content/data/pornography2k',
+                              labels=vswin.label_from_path({'NonPorn': 0, 'Porn': 1}))
+train_rec, val_rec = vswin.split_records(records, val_fraction=0.2)
+train_loader, val_loader = vswin.make_loaders(train_rec, val_rec, batch_size=2)
+
+cfg = vswin.FineTuneConfig(output_dir='/content/drive/MyDrive/vswin_runs/run1', epochs=30)
+vswin.FineTuner(model, train_loader, val_loader, cfg).fit()
 ```
 
-## Other Links
+- **Partición fija para varios entrenamientos.** `get_or_create_split(records, split_dir)` divide la primera
+  vez en train, val y test (por video y estratificado) y guarda `train.txt`, `val.txt`, `test.txt` y
+  `split_info.json`. Las corridas siguientes solo leen esos archivos (`load_split`). Si falta un video
+  de la lista, se detiene con un error. `make_eval_loader(test_rec)` crea el loader de test.
+- **Entrenamiento por miniclip.** El muestreador da el mismo peso a cada video, sin importar su K, y a
+  cada clase.
+- **Evaluación por video.** La probabilidad de un video es el promedio de las de sus miniclips (como
+  `average_clips='prob'` en mmaction). Se informan métricas por miniclip (`clip_*`) y por video
+  (`video_*`): accuracy, balanced accuracy y, con 2 clases, precision, recall, F1 y AUC.
+- **Archivos en `output_dir`:** `last.pth` (cada época, para reanudar), `best.pth` (mejor `monitor`),
+  `history.json`, `predictions_best.json` y `config.json`.
+- **Reanudación.** Si Colab se desconecta, crea otra vez el modelo, los loaders y el `FineTuner` con el
+  mismo `output_dir`, y el entrenamiento continúa desde `last.pth`.
 
-> **Image Classification**: See [Swin Transformer for Image Classification](https://github.com/microsoft/Swin-Transformer).
+### Memoria (Swin-B, 32×224×224)
 
-> **Object Detection**: See [Swin Transformer for Object Detection](https://github.com/SwinTransformer/Swin-Transformer-Object-Detection).
+| GPU | Recomendación |
+|---|---|
+| T4 16 GB | `batch_size=2`, `use_checkpoint=True`, `accumulation_steps=8` |
+| L4 24 GB | `batch_size=4`, `use_checkpoint=True` |
+| A100 40 GB | `batch_size=8` (sin checkpointing si cabe) |
 
-> **Semantic Segmentation**: See [Swin Transformer for Semantic Segmentation](https://github.com/SwinTransformer/Swin-Transformer-Semantic-Segmentation).
+`use_checkpoint=True` recalcula activaciones en el paso hacia atrás: usa mucha menos memoria y tarda
+alrededor de un 30 % más. Si solo hay poca GPU disponible, `freeze_backbone_epochs` entrena solo la
+cabeza durante las primeras épocas.
 
-> **Self-Supervised Learning**: See [MoBY with Swin Transformer](https://github.com/SwinTransformer/Transformer-SSL).
+### Diferencias con la receta oficial
+
+- Las tasas de aprendizaje oficiales suponen 8 GPU × 8 videos × acumulación de 8. Con un lote efectivo
+  mucho menor, conviene probar `lr` entre 1e-4 y 3e-4.
+- En mmcv solo se aplica la primera clave de `paramwise_cfg` que coincide. Por eso, en las corridas
+  oficiales, las normas del backbone conservaron weight decay. Aquí ningún parámetro 1-D ni las tablas
+  de posición llevan weight decay, y todo el backbone usa `lr × 0.1`.
+- El pipeline oficial hace `RandomResizedCrop` sobre el video original. Aquí los miniclips ya están en
+  224×224, así que solo se aplica volteo horizontal.
